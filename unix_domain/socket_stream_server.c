@@ -1,65 +1,92 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include "unix_socket.h"
 
 #define BACKLOG 5
 
 int main(int argc, char *argv[])
 {
-    int ret=0;
-    int sfd, cfd;
-    struct sockaddr_un addr;
+    int server_fd, client_fd;
+    struct sockaddr_un server_sockaddr;
+    struct sockaddr_un client_sockaddr;
     char buf[BUFFSIZE];
     ssize_t num_read;
+    int sock_len;
+    int ret;
 
-    sfd = socket(AF_UNIX, SOCK_STREAM, 0);
-    if(sfd == -1){
+    memset(&server_sockaddr, 0, sizeof(struct sockaddr_un));
+    memset(&client_sockaddr, 0, sizeof(struct sockaddr_un));
+    memset(buf, 0, BUFFSIZE);
+
+    /* create unix domain stream socket */
+    server_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if(server_fd == -1){
         perror("socket");
-        goto errout;
+        goto fail;
     }
 
-    memset(&addr, 0, sizeof(struct sockaddr_un));
-    addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, SV_SOCK_PATH, sizeof(addr.sun_path) - 1);
-
-    if(bind(sfd, (struct sockaddr_un *)&addr, sizeof(struct sockaddr_un)) == -1){
+    /*  set sockaddr and bind the file,
+     * unlink file first for bind succeed */
+    server_sockaddr.sun_family = AF_UNIX;
+    strcpy(server_sockaddr.sun_path, SERVER_SOCK_PATH);
+    sock_len = sizeof(server_sockaddr);
+    unlink(SERVER_SOCK_PATH);
+    ret = bind(server_fd, (struct sockaddr *)&server_sockaddr, sock_len);
+    if(ret == -1){
         perror("bind");
-        goto errout;
+        goto fail;
     }
 
-    if(listen(sfd, BACKLOG) == -1){
+    /* listen for client socket */
+    ret = listen(server_fd, BACKLOG);
+    if(ret == -1){
         perror("listen");
-        goto errout;
+        goto fail;
     }
 
+    /* accept client */
     for(;;){
-        cfd = accept(sfd, NULL, NULL);
-        if(cfd == -1){
+        // sock_len need to be initilized, or accept will return invalid argument error
+        client_fd = accept(server_fd, (struct sockaddr *)&client_sockaddr, (socklen_t *)&sock_len);     
+        if(client_fd == -1){
             perror("accept");
-            goto errout;
+            close(client_fd);
+            goto fail;
         }
 
-        while((num_read = read(cfd, buf, BUFFSIZE)) > 0) {
-            if(write(stdout, buf, num_read) != num_read){
+        /* get the name of the connected socket (if client bind to a sockpath) */
+        sock_len = sizeof(client_sockaddr);
+        ret = getpeername(client_fd, (struct sockaddr *)&client_sockaddr, (socklen_t *)&sock_len);
+        if(ret){
+            perror("getpeername");
+            goto fail;
+        }
+        else{
+            printf("client socket name: %s\n", client_sockaddr.sun_path);
+        }
+
+        /* receive data from client socket */
+        while((num_read = read(client_fd, buf, BUFFSIZE)) > 0) {
+            if(write(STDOUT_FILENO, buf, num_read) != num_read){
                 printf("partial/failed write.\n");
-                goto errout;
+                goto fail;
             }
         }
 
         if(num_read == -1){
             perror("read");
-            goto errout;
+            goto fail;
         }
 
-        if(close(cfd) == -1){
-            printf("close client fd %d fail.\n",cfd);
+        if(close(client_fd) == -1){
+            printf("close client fd %d fail.\n",client_fd);
         }
     }
 
     return 0;
 
-errout:
+fail:
+    if(client_fd)
+        close(client_fd);
+    close(server_fd);
     return -1;
 }
 
