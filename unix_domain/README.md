@@ -14,10 +14,18 @@ make clean; make all
 2. client端是否bind到sockaddr不影响和server端通信；
 
 ## Datagram socket
-
+server端：unix_domain/socket_datagram_server.c
+client端：unix_domain/socket_datagram_client.c
+测试：
+```bash
+make clean; make all
+./datagram_server             # 开启服务端监听
+./datagram_client             # 客户端连接，并发送测试数据
+```
 
 
 ## Todolist
 [] socket通信中各种读写接口补充，比如`read()`,`write()`,`sendmsg()`,`recvmsg()`等；
 [] client是否bind到sockaddr的区别？
 [] stream方式中len参数必须初始化原因？
+[] datagram方式中是否调用connect()的区别？
