@@ -8,3 +8,8 @@ linux中socket通信根据通信域（communication domain）可以分为三种�
 * stream socket：面向连接的、可靠的、双向的字节流传输方式;
 * datagram socket：datagram类型是无连接的、非可靠的报文传输方式。
 
+[TODO]socket通信发送接收api：
+* sendto()/recvfrom()
+* send()/recv()
+* sendmsg()/recvmsg()
+

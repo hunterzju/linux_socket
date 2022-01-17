@@ -3,7 +3,7 @@
  * @Author: hunterzju
  * @Date: 2022-01-16 20:00:07
  * @LastEditors: `${env:USERNAME}`
- * @LastEditTime: 2022-01-16 22:24:52
+ * @LastEditTime: 2022-01-17 09:15:13
  * @FilePath: /linux_socket/ip_domain/ip_socket.h
  */
 
@@ -20,5 +20,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/wait.h>
+
+#define BUFFSIZE    128
+
+#define SERVER_PORT 50001
 
 #endif
