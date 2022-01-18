@@ -3,7 +3,7 @@
  * @Author: hunterzju
  * @Date: 2022-01-16 20:00:07
  * @LastEditors: `${env:USERNAME}`
- * @LastEditTime: 2022-01-17 09:15:13
+ * @LastEditTime: 2022-01-17 22:18:08
  * @FilePath: /linux_socket/ip_domain/ip_socket.h
  */
 
@@ -24,5 +24,7 @@
 #define BUFFSIZE    128
 
 #define SERVER_PORT 50001
+
+#define BACKLOG     5
 
 #endif

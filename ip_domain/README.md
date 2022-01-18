@@ -25,5 +25,6 @@ make clean; make all
 
 
 ## Todolist
-[] 补充TCP连接例程
-[] socket通信中各种读写接口补充，比如`read()`,`write()`,`sendmsg()`,`recvmsg()`等；
+- [*] 补充TCP连接例程；
+- [] socket通信中各种读写接口补充，比如`read()`,`write()`,`sendmsg()`,`recvmsg()`等；
+- [] socket()创建的`fd`，`sockaddr`的作用，以及`bind()`的作用梳理；
