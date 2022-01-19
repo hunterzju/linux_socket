@@ -43,6 +43,11 @@ int main(void)
         else{
             printf("received data: %s\n", buf);
         }
+        ret = sendto(server_fd, buf, bytes_cnt, 0, (struct sockaddr *)&client_sockaddr, (socklen_t)sock_len);
+        if (ret == -1) {
+            perror("send fail");
+            goto fail;
+        }
     }
 
     close(server_fd);

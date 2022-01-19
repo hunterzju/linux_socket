@@ -25,7 +25,7 @@ make clean; make all
 
 
 ## Todolist
-[] socket通信中各种读写接口补充，比如`read()`,`write()`,`sendmsg()`,`recvmsg()`等；
-[] client是否bind到sockaddr的区别？
-[] stream方式中len参数必须初始化原因？
-[] datagram方式中是否调用connect()的区别？
+- [] socket通信中各种读写接口补充，比如`read()`,`write()`,`sendmsg()`,`recvmsg()`等；
+- [] client是否bind到sockaddr的区别？
+- [] stream方式中len参数必须初始化原因？
+- [] datagram方式中是否调用connect()的区别？ datagram方式本身就是无连接的，不应该调用connect；

@@ -4,3 +4,7 @@ unix_domain/stream_server
 unix_domain/test.txt
 unix_domain/datagram_client
 unix_domain/datagram_server
+ip_domain/tcp_server
+ip_domain/tcp_client
+ip_domain/udp_server
+ip_domain/udp_client

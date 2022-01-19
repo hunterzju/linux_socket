@@ -6,10 +6,13 @@ int main(void)
 {
     int client_fd;
     struct sockaddr_un server_sockaddr;
+    struct sockaddr_un client_sockaddr;
     char buf[BUFFSIZE];
     int ret;
+    int sock_len, num_bytes;
 
     memset(&server_sockaddr, 0, sizeof(server_sockaddr));
+    memset(&client_sockaddr, 0, sizeof(client_sockaddr));
     memset(&buf, 0, BUFFSIZE);
 
     /* create datagram socket fd */
@@ -19,7 +22,15 @@ int main(void)
         goto fail;
     }
 
-    /*setup unix sockaddr */
+    /* setup client unix sockaddr */
+    client_sockaddr.sun_family = AF_UNIX;
+    strcpy(client_sockaddr.sun_path, CLIENT_SOCK_PATH);
+    if (bind(client_fd, (struct sockaddr *)&client_sockaddr, sizeof(client_sockaddr)) == -1) {
+        perror("BIND SOCKET FAIL");
+        goto fail;
+    }
+
+    /* setup server unix sockaddr */
     server_sockaddr.sun_family = AF_UNIX;
     strcpy(server_sockaddr.sun_path, SERVER_SOCK_PATH);
     
@@ -34,6 +45,16 @@ int main(void)
     else{
         printf("Send data OK.\n");
     }
+    sock_len = sizeof(struct sockaddr_un);
+    num_bytes = recvfrom(client_fd, buf, sizeof(TEST_DATA), 0, (struct sockaddr *)&server_sockaddr, &sock_len);
+    if (num_bytes <= 0) {
+        perror("REVEIVE FAIL");
+        goto fail;
+    }
+    else{
+        printf("Receive data: %s\n", buf);
+    }
+
 
     /* close socket and exit */
     close(client_fd);
